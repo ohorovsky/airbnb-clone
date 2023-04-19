@@ -5,6 +5,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { useCallback, useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import useRegisterModal from '@/app/hooks/useRegisterModal';
+import useLoginModal from '@/app/hooks/useLoginModal';
 import Modal from './Modal';
 import Heading from '../Heading';
 import Input from '../inputs/Input';
@@ -14,6 +15,7 @@ import { signIn } from 'next-auth/react';
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
+  const loginModal = useLoginModal();
   const [isLoading, setIsLoading] = useState(false);
   const {
     register,
@@ -41,6 +43,10 @@ const RegisterModal = () => {
         setIsLoading(false);
       })
   }
+  const toggle = useCallback(() => {
+    registerModal.onClose()
+    loginModal.onOpen()
+  }, [loginModal, registerModal])
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading title="Welcome to Airbnb" subtitle="Create an account" />
@@ -57,7 +63,7 @@ const RegisterModal = () => {
       <div className='text-neutral-500 text-center mt-4 font-light'>
         <div className='flex flex-row gap-2 items-center justify-center'>
           <div>Already have an account?</div>
-          <div className='text-neutral-800 cursor-pointer hover:underline' onClick={registerModal.onClose}>Login</div>
+          <div className='text-neutral-800 cursor-pointer hover:underline' onClick={toggle}>Login</div>
         </div>
       </div>
     </div>
