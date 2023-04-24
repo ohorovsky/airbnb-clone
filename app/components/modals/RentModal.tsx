@@ -6,6 +6,8 @@ import Modal from './Modal';
 import Heading from '../Heading';
 import { categories } from '../navbar/Categories';
 import CategoryInput from '../inputs/CategoryInput';
+import CountrySelect from '../inputs/CountrySelect';
+import dynamic from 'next/dynamic';
 
 enum STEPS {
   CATEGORY = 0,
@@ -36,6 +38,8 @@ const RentModal = () => {
     }
   });
   const category = watch('category');
+  const location = watch('location');
+  const Map = useMemo(() => dynamic(() => import('../Map'), { ssr: false }), [location]); // this is necessary because leaflet map is being a dick
   const setCustomValue = (id: string, value: any) => {
     setValue(id, value, {
       shouldDirty: true,
@@ -57,7 +61,7 @@ const RentModal = () => {
       return undefined;
     }
     return 'Back'
-  }, [])
+  }, [step])
   let bodyContent = (
     <div className="flex flex-col gap-8">
       <Heading title="Which of these best describes yout place?" subtitle='Pick a category' />
@@ -70,11 +74,20 @@ const RentModal = () => {
       </div>
     </div>
   )
+  if (step === STEPS.LOCATION) {
+    bodyContent = (
+      <div className="flex flex-col gap-8">
+        <Heading title="Where is your place located?" subtitle='Help guests find you!' />
+        <CountrySelect value={location} onChange={(value) => setCustomValue('location', value)} />
+        <Map center={location?.latlng} />
+      </div>
+    )
+  }
   return (
     <Modal
       isOpen={rentModal.isOpen}
       // disabled={isLoading}
-      onSubmit={rentModal.onClose}
+      onSubmit={onNext}
       onClose={rentModal.onClose}
       actionLabel={actionLabel}
       secondaryActionLabel={secondaryActionLabel}
